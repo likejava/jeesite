@@ -18,8 +18,8 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/work/workProduct/">产品列表列表</a></li>
-		<shiro:hasPermission name="work:workProduct:edit"><li><a href="${ctx}/work/workProduct/form">产品列表添加</a></li></shiro:hasPermission>
+		<li class="active"><a href="${ctx}/work/workProduct/">产品列表</a></li>
+		<shiro:hasPermission name="work:workProduct:edit"><li><a href="${ctx}/work/workProduct/form">产品添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="workProduct" action="${ctx}/work/workProduct/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
@@ -68,7 +68,7 @@
 				</td>
 				<shiro:hasPermission name="work:workProduct:edit"><td>
     				<a href="${ctx}/work/workProduct/form?id=${workProduct.id}">修改</a>
-					<a href="${ctx}/work/workProduct/delete?id=${workProduct.id}" onclick="return confirmx('确认要删除该产品列表吗？', this.href)">删除</a>
+					<a href="${ctx}/work/workProduct/delete?id=${workProduct.id}" onclick="return confirmx('确认要删除该产品吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>
