@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.work.dao.WorkProductDao">
+    
+	<sql id="workProductColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.price AS "price",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.saler AS "saler.id",
+		u10.name AS "saler.name"
+	</sql>
+	
+	<sql id="workProductJoins">
+		LEFT JOIN sys_user u10 ON u10.id = a.saler
+	</sql>
+    
+	<select id="get" resultType="WorkProduct">
+		SELECT 
+			<include refid="workProductColumns"/>
+		FROM work_product a
+		<include refid="workProductJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WorkProduct">
+		SELECT 
+			<include refid="workProductColumns"/>
+		FROM work_product a
+		<include refid="workProductJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+			<if test="saler != null and saler.id != null and saler.id != ''">
+				AND a.saler LIKE 
+					<if test="dbName == 'oracle'">'%'||#{saler.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{saler.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{saler.id},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WorkProduct">
+		SELECT 
+			<include refid="workProductColumns"/>
+		FROM work_product a
+		<include refid="workProductJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO work_product(
+			id,
+			name,
+			price,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			saler
+		) VALUES (
+			#{id},
+			#{name},
+			#{price},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{saler.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE work_product SET 	
+			name = #{name},
+			price = #{price},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			saler = #{saler.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE work_product SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
